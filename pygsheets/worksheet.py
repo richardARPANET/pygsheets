@@ -626,7 +626,7 @@ class Worksheet(object):
                     try:
                         values[cell.row-1][cell.col-1] = cell.value
                     except IndexError:
-                            raise CellNotFound(cell)
+                        raise CellNotFound(cell)
                 values = [row[min_tuple[1]-1:max_tuple[1]] for row in values[min_tuple[0]-1:max_tuple[0]]]
                 crange = str(format_addr(tuple(min_tuple))) + ':' + str(format_addr(tuple(max_tuple)))
         elif crange and values:
@@ -1403,11 +1403,14 @@ class Worksheet(object):
 
         if numerize:
             values = [numericise_all(row[:len(values)], empty_value) for row in values]
-
         if has_header:
             keys = values[0]
-            values = [row[:len(keys)] for row in values[1:]]
-            df = pd.DataFrame(values, columns=keys)
+            values = [row[:len(values[0])] for row in values[1:]]
+            values_with_empties_filled = [
+                (v if len(v) == len(keys) else v +
+                 ['' for _ in range(len(keys) - len(v))]) for v in values
+            ]
+            df = pd.DataFrame(values_with_empties_filled, columns=keys)
         else:
             df = pd.DataFrame(values)
 
