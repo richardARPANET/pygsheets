@@ -45,15 +45,21 @@ def numericise(value, empty_value=''):
     """
     if value == '':
         return empty_value
+    result = value
     if value is not None:
         try:
-            value = int(value)
+            result = int(value)
+            if len(str(result)) != len(str(value)):
+                return value
         except ValueError:
             try:
-                value = float(value)
+                result = float(value)
             except ValueError:
                 pass
-    return value
+            else:
+                if len(str(result)) != len(str(value)):
+                    return value
+    return result
 
 
 def numericise_all(input, empty_value=''):
